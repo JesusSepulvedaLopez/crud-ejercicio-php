@@ -1,73 +1,141 @@
-<?php
-   include "../app/moviesController.php";
+<?php 
+	include "../app/categoryController.php";
+	include "../app/movieController.php";
 
-   $moviesController = new MoviesController();
-   $movies = $moviesController->get();
+	$categoryController = new CategoryController();
+	$movieController = new MovieController();
+
+	$categories = $categoryController->get();
+	$movies = $movieController->get();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movies</title>
+	<title>
+		Movies
+	</title>
+	<style type="text/css">
+		table, th, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+		}
+		#updateForm{
+			display: none;
+		}
+	</style>
 </head>
 <body>
-<h1>
-        Categories
-    </h1>
-    <table>
-        <tbody>
-            <?php
-            foreach ($movies as $movie) {
-                echo "<tr>
-                   <td>
-                       " . $movie['id'] . "
-                   </td>
-                   <td>
-                       " . $movie['name'] . "
-                   </td>
-                   <td>
-                       " . $movie['description'] . "
-                   </td>
-                 </tr>";
-            }
+	<h1>
+		Movies
+	</h1>
 
-            ?>
-        </tbody>
-    </table>
-    <br>
-    <form action="../app/moviesController.php" method="POST">
-        <fieldset>
+	<?php include "../layouts/alerts.template.php"; ?>
 
-            <legend>
-                Add new Movie
-            </legend>
+	<table>
+		<thead>
+			<th>
+				#
+			</th>
+			<th>
+				title
+			</th>
+			<th>
+				cover
+			</th>
+			<th>
+				minutes
+			</th>
+			<th>
+				category
+			</th>
+		</thead>
+		<tbody>
+			<?php foreach ($movies as $movie): ?>
+			<tr>
+				<td>
+					<?= $movie['id'] ?>
+				</td>
+				<td></td>
+				<td>
+					<img style="width: 10%" src="../assets/img/movies/<?= $movie['cover'] ?>">
+				</td>
+				<td>
+					<a href="details/?id=<?= $movie['id'] ?>">
+						show details
+					</a>
+				</td>
 
-            <label>
-                Name
-            </label>
-            <input type="text" name="name" placeholder="terror" required="">
-            <br>
+			</tr>
+			<?php endforeach ?>
+		</tbody>
+	</table>
 
-            <label>
-                Description
-            </label>
-            <textarea placeholder="write here" name="description" rows="5" required=""></textarea>
-            <br>
+	<form action="../app/movieController.php" method="POST" enctype="multipart/form-data" >
+		<fieldset>
+			<legend>
+				Add Movie
+			</legend>
 
-            <label>
-                Status
-            </label>
-            <select name="status">
-                <option> active </option>
-                <option> inactive </option>
-            </select>
-            <br>
 
-            <button type="submit">Save Movie</button>
-            <input type="hidden" name="action" value="store">
+			<label>
+				Title
+			</label>
+			<input type="text" name="title" placeholder="movie name" required="">
 
-        </fieldset>
-    </form>
+			<br>
+
+			<label>
+				Description
+			</label>
+			<textarea name="descripiton" rows="5" placeholder="Description" required=""></textarea>
+
+			<br>
+
+			<label>
+				Cover
+			</label>
+			<input type="file" name="cover" required="" accept="image/*">
+
+			<br>
+
+			<label>
+				Minutes
+			</label>
+			<input type="number" name="minutes" placeholder="80" required="">
+			
+			<br>
+
+			<label>
+				Clasification
+			</label>
+			<select  name="clasification" required="">
+				<option> B15 </option>
+				<option> BA </option>
+			</select>
+			<br>
+
+
+			<label>
+				Category
+			</label>
+			<select  name="category_id" required=""> 
+				<?php foreach ($categories as $category): ?>
+
+				<option value="<?= $category['id'] ?>" >
+					<?= $category['name'] ?>
+				</option>
+
+				<?php endforeach ?>
+
+			</select>
+			<br>
+
+			<button type="submit">
+				Save
+			</button>
+			<input type="hidden" name="action" value="store">
+
+		</fieldset>
+	</form>
 </body>
 </html>
