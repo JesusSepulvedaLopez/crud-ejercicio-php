@@ -7,6 +7,13 @@
 
 	$categories = $categoryController->get();
 	$movies = $movieController->get();
+
+	if (isset($_SESSION)==false || 
+		isset($_SESSION['id'])==false){
+		
+		header("Location:../");
+	}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -70,27 +77,21 @@
 		</tbody>
 	</table>
 
-	<form action="../app/movieController.php" method="POST" enctype="multipart/form-data" >
+	<form action="<?= BASE_PATH ?>movie" method="POST" enctype="multipart/form-data" >
 		<fieldset>
 			<legend>
 				Add Movie
 			</legend>
-
-
 			<label>
 				Title
 			</label>
 			<input type="text" name="title" placeholder="movie name" required="">
-
 			<br>
-
 			<label>
 				Description
 			</label>
 			<textarea name="descripiton" rows="5" placeholder="Description" required=""></textarea>
-
 			<br>
-
 			<label>
 				Cover
 			</label>
@@ -126,7 +127,6 @@
 				</option>
 
 				<?php endforeach ?>
-
 			</select>
 			<br>
 
@@ -134,6 +134,7 @@
 				Save
 			</button>
 			<input type="hidden" name="action" value="store">
+			<input type="hidden" name="token" value="<?= $_SESSION['token'] ?>" >
 
 		</fieldset>
 	</form>

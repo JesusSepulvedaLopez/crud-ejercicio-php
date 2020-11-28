@@ -1,33 +1,36 @@
 <?php
-if (!isset($_SESSION)) {
-   session_start();
-}
+include_once "app.php";
 include "connectionController.php";
 
 if (isset($_POST['action'])) {
-   $categoryController = new CategoryController();
+   if (isset($_POST['token']) && $_POST['token'] == $_SESSION['token']) {
+      $categoryController = new CategoryController();
 
-   switch ($_POST['action']) {
-      case 'store':
-         $name = strip_tags($_POST['name']);
-         $description = strip_tags($_POST['description']);
-         $status = strip_tags($_POST['status']);
+      switch ($_POST['action']) {
+         case 'store':
+            $name = strip_tags($_POST['name']);
+            $description = strip_tags($_POST['description']);
+            $status = strip_tags($_POST['status']);
 
-         $categoryController->store($name, $description, $status);
-         break;
-      case 'update':
-         $name = strip_tags($_POST['name']);
-         $description = strip_tags($_POST['description']);
-         $status = strip_tags($_POST['status']);
-         $id = strip_tags($_POST['id']);
-          
+            $categoryController->store($name, $description, $status);
+            break;
+         case 'update':
+            $name = strip_tags($_POST['name']);
+            $description = strip_tags($_POST['description']);
+            $status = strip_tags($_POST['status']);
+            $id = strip_tags($_POST['id']);
 
-         $categoryController->update( $id, $name, $description, $status); 
-         break;
-      case 'destroy':
-         $id = strip_tags($_POST['id']);
-         $categoryController->destroy( $id); 
-         break;
+
+            $categoryController->update($id, $name, $description, $status);
+            break;
+         case 'destroy':
+            $id = strip_tags($_POST['id']);
+            $categoryController->destroy($id);
+            break;
+      }
+   } else {
+      $_SESSION['error'] = "de seguridad";
+      header("Location:" . $_SERVER['HTTP_REFERER']);
    }
 }
 
@@ -85,11 +88,12 @@ class CategoryController
          header("Location:" . $_SERVER['HTTP_REFERER']);
       }
    }
-   
-   public function update($id, $name, $description, $status){
+
+   public function update($id, $name, $description, $status)
+   {
       $conn = connect();
       if ($conn->connect_error == false) {
-         if ( $id !="" && $name != "" && $description != "" && $status != "") {
+         if ($id != "" && $name != "" && $description != "" && $status != "") {
 
             $query = "update categories set name = ?, description = ?, status = ? where id = ?";
             $prepared_query = $conn->prepare($query);
@@ -107,26 +111,25 @@ class CategoryController
       }
    }
 
-   public function destroy($id){
+   public function destroy($id)
+   {
       $conn = connect();
-      if($conn->connect_error == false){
-         if($id !=""){
+      if ($conn->connect_error == false) {
+         if ($id != "") {
             $query = "delete from categories where id = ?";
-				$prepared_query = $conn->prepare($query);
-				$prepared_query->bind_param('i',$id);
-				if ($prepared_query->execute()) {
+            $prepared_query = $conn->prepare($query);
+            $prepared_query->bind_param('i', $id);
+            if ($prepared_query->execute()) {
 
-					header("Location:".$_SERVER['HTTP_REFERER']);
-				}else{
-					header("Location:".$_SERVER['HTTP_REFERER']);
-				}
-         }else{
-            header("Location:".$_SERVER['HTTP_REFERER']);
+               header("Location:" . $_SERVER['HTTP_REFERER']);
+            } else {
+               header("Location:" . $_SERVER['HTTP_REFERER']);
+            }
+         } else {
+            header("Location:" . $_SERVER['HTTP_REFERER']);
          }
-      }else{
-         header("Location:".$_SERVER['HTTP_REFERER']);
+      } else {
+         header("Location:" . $_SERVER['HTTP_REFERER']);
       }
    }
-  
 }
-?>
